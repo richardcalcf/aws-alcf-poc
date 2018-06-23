@@ -1,0 +1,129 @@
+Parameters:
+  VPCName:
+    Type: 'String'
+    Description: 'Please provide an appropriate name for the VPC.'
+  
+  EnvSize:
+    Type: "String"
+    Default: "SMALL"
+    AllowedValues:
+      - "SMALL"
+      - "MEDIUM"
+      - "LARGE"
+    Description: "Select an instance size (small, medium, large)"
+
+Mappings:
+  EnvironmentSize:
+    SMALL:
+      "EC2": "t2.micro"
+      "DB": "db.t2.micro"
+    MEDIUM:
+      "EC2": "t2.small"
+      "DB": "db.t2.small"
+    LARGE:
+      "EC2": "t2.medium"
+      "DB": "db.t2.medium"
+  RegionMaps:
+    us-east-1: 
+      MachineImage: "ami-14c5486b" # Amazon Linux March 2018
+    us-east-2:
+      MachineImage: "ami-922914f7" # Amazon Linux March 2018
+    us-west-1:
+      MachineImage: "ami-25110f45" # Amazon Linux March 2018
+    us-west-2:
+      MachineImage: "ami-e251209a" # Amazon Linux March 2018  
+
+Resources:
+  VPCRICHC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: '10.0.0.0/16'
+      InstanceTenancy: 'default'
+      Tags:
+      -  Key: 'Name'
+         Value: 'VPCRICHC'
+
+
+  SUBRICHC:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      CidrBlock: '10.0.1.0/24'
+      VpcId: !Ref VPCRICHC
+      Tags:
+      -  Key: 'Name'
+         Value: 'SUBRICHC'
+
+  IGWRICHC:
+    Type: 'AWS::EC2::InternetGateway'
+    Properties: 
+      Tags:
+      - Key: 'Name'
+        Value: 'IGWRICHC'
+  
+  ATTACHIGWRICHC:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      VpcId: !Ref VPCRICHC
+      InternetGatewayId: !Ref IGWRICHC  
+
+  EC2RICHC:
+    Type:  "AWS::EC2::Instance"
+    Properties:
+      ImageId:  !FindInMap ["RegionMaps", !Ref "AWS::Region", "MachineImage"]
+      InstanceType:  !FindInMap [EnvironmentSize, !Ref EnvSize, "EC2"]
+      # NEW Key/value pairs of KeyName, UserData and two functions Base64 and Sub
+      KeyName:  'AdvancedCFN'
+      SubnetId: !Ref SUBRICHC
+      UserData: 
+        "Fn::Base64":
+          !Sub |
+            #!/bin/bash
+            yum install httpd -y
+            yum update -y
+            service httpd start
+            chkconfig httpd on
+            echo "<html><h1>Hello Cloud Gurus!</h1></html>" > /var/www/html/index.html
+  
+  MyEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref EC2RICHC
+  
+  TableRICHC:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPCRICHC
+      Tags:
+      - Key: Name
+        Value: TableRICHC
+
+  myRoute:
+    Type: AWS::EC2::Route
+    DependsOn: IGWRICHC
+    Properties:
+      RouteTableId: !Ref TableRICHC
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref IGWRICHC
+
+  SUBASSOCRICHC:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref TableRICHC
+      SubnetId: !Ref SUBRICHC
+    
+  SGRICHC:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: 'WebDMZ'
+      GroupDescription: 'HTTP Access for both ingress and egress traffic'
+      VpcId: !Ref VPCRICHC
+#      SecurityGroupIngress:
+#        IpProtocol: tcp
+#        FromPort: '80'
+#        ToPort: '80'
+#        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        IpProtocol: tcp
+        FromPort: '80'
+        ToPort: '80'
+        CidrIp: 0.0.0.0/0

@@ -74,6 +74,8 @@ Resources:
       # NEW Key/value pairs of KeyName, UserData and two functions Base64 and Sub
       KeyName:  'AdvancedCFN'
       SubnetId: !Ref SUBRICHC
+      SecurityGroups:
+      - !Ref SGRICHC
       UserData: 
         "Fn::Base64":
           !Sub |
@@ -117,11 +119,11 @@ Resources:
       GroupName: 'WebDMZ'
       GroupDescription: 'HTTP Access for both ingress and egress traffic'
       VpcId: !Ref VPCRICHC
-#      SecurityGroupIngress:
-#        IpProtocol: tcp
-#        FromPort: '80'
-#        ToPort: '80'
-#        CidrIp: 0.0.0.0/0
+      SecurityGroupIngress:
+        IpProtocol: tcp
+        FromPort: '80'
+        ToPort: '80'
+        CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
         IpProtocol: tcp
         FromPort: '80'

@@ -43,7 +43,7 @@ Resources:
       -  Key: 'Name'
          Value: 'VPCRICHC'
 
-
+#Public Subnet
   SUBRICHC:
     Type: 'AWS::EC2::Subnet'
     Properties:
@@ -53,12 +53,36 @@ Resources:
       -  Key: 'Name'
          Value: 'SUBRICHC'
 
+#Private Subnet
+  SUBRICHC2:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      CidrBlock: '10.0.2.0/24'
+      VpcId: !Ref VPCRICHC
+      Tags:
+      -  Key: 'Name'
+         Value: 'SUBRICHC2'
+
+#NAT Elastic IP
+  NATEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: !Ref VPCRICHC
+    DependsOn: VPCRICHC
+
+#NAT Gateway
+  NATGW:
+    Type: 'AWS::EC2::NatGateway'
+    Properties:
+      AllocationId: !Ref NATEIP
+
   IGWRICHC:
     Type: 'AWS::EC2::InternetGateway'
     Properties: 
       Tags:
       - Key: 'Name'
         Value: 'IGWRICHC'
+
   
   ATTACHIGWRICHC:
     Type: 'AWS::EC2::VPCGatewayAttachment'
@@ -66,7 +90,7 @@ Resources:
       VpcId: !Ref VPCRICHC
       InternetGatewayId: !Ref IGWRICHC  
 
-  EC2RICHC:
+  EC2RICHC1:
     Type:  "AWS::EC2::Instance"
     Properties:
       ImageId:  !FindInMap ["RegionMaps", !Ref "AWS::Region", "MachineImage"]
@@ -90,8 +114,29 @@ Resources:
   MyEIP:
     Type: AWS::EC2::EIP
     Properties:
-      InstanceId: !Ref EC2RICHC
-  
+      InstanceId: !Ref EC2RICHC1
+
+  EC2RICHC2:
+    Type:  "AWS::EC2::Instance"
+    Properties:
+      ImageId:  !FindInMap ["RegionMaps", !Ref "AWS::Region", "MachineImage"]
+      InstanceType:  !FindInMap [EnvironmentSize, !Ref EnvSize, "EC2"]
+      # NEW Key/value pairs of KeyName, UserData and two functions Base64 and Sub
+      KeyName:  'AdvancedCFN'
+      SubnetId: !Ref SUBRICHC2
+      SecurityGroupIds:
+      - !Ref SGRICHC
+      UserData: 
+        "Fn::Base64":
+          !Sub |
+            #!/bin/bash
+            yum install httpd -y
+            yum update -y
+            service httpd start
+            chkconfig httpd on
+            echo "<html><h1>Hello Cloud Gurus!</h1></html>" > /var/www/html/index.html
+    DependsOn: SGRICHC
+
   TableRICHC:
     Type: AWS::EC2::RouteTable
     Properties:

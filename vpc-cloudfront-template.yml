@@ -186,7 +186,7 @@ Resources:
   PRIVSUBASSOCRICHC:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref privateRoute
+      RouteTableId: !Ref PrivateTable
       SubnetId: !Ref SUBRICHC2
 
   SGRICHC:

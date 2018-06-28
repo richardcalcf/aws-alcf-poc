@@ -51,7 +51,7 @@ Resources:
       VpcId: !Ref VPCRICHC
       Tags:
       -  Key: 'Name'
-         Value: 'SUBRICHC'
+         Value: 'Public Subnet'
 
 #Private Subnet
   SUBRICHC2:
@@ -61,7 +61,7 @@ Resources:
       VpcId: !Ref VPCRICHC
       Tags:
       -  Key: 'Name'
-         Value: 'SUBRICHC2'
+         Value: 'Private Subnet'
 
 #NAT Elastic IP
   NATEIP:
@@ -71,11 +71,11 @@ Resources:
     DependsOn: VPCRICHC
 
 #NAT Gateway
-  NATGW:
-    Type: 'AWS::EC2::NatGateway'
-    Properties:
-      AllocationId: !Ref NATEIP
-      SubnetId: !Ref SUBRICHC2
+#  NATGW:
+#    Type: 'AWS::EC2::NatGateway'
+#    Properties:
+#      AllocationId: !Ref NATEIP
+#      SubnetId: !Ref SUBRICHC
 
   IGWRICHC:
     Type: 'AWS::EC2::InternetGateway'
@@ -109,7 +109,7 @@ Resources:
             yum update -y
             service httpd start
             chkconfig httpd on
-            echo "<html><h1>Hello Cloud Gurus!</h1></html>" > /var/www/html/index.html
+            echo "<html><h1>Hello Cloud Architects!</h1></html>" > /var/www/html/index.html
     DependsOn: SGRICHC
 
   MyEIP:
@@ -131,11 +131,7 @@ Resources:
         "Fn::Base64":
           !Sub |
             #!/bin/bash
-            yum install httpd -y
             yum update -y
-            service httpd start
-            chkconfig httpd on
-            echo "<html><h1>Hello Cloud Gurus!</h1></html>" > /var/www/html/index.html
     DependsOn: SGRICHC
 
   TableRICHC:

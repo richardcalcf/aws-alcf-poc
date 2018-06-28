@@ -49,6 +49,7 @@ Resources:
     Properties:
       CidrBlock: '10.0.1.0/24'
       VpcId: !Ref VPCRICHC
+      MapPublicIpOnLaunch: True
       Tags:
       -  Key: 'Name'
          Value: 'Public Subnet'
@@ -101,6 +102,9 @@ Resources:
       SubnetId: !Ref SUBRICHC
       SecurityGroupIds:
       - !Ref SGRICHC
+      Tags:
+      - Key: 'Name'
+        Value: 'Public Web Server'
       UserData: 
         "Fn::Base64":
           !Sub |
@@ -127,6 +131,9 @@ Resources:
       SubnetId: !Ref SUBRICHC2
       SecurityGroupIds:
       - !Ref SGRICHC
+      Tags:
+      - Key: 'Name'
+        Value: 'Private Web Server'
       UserData: 
         "Fn::Base64":
           !Sub |
@@ -149,6 +156,14 @@ Resources:
       RouteTableId: !Ref TableRICHC
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref IGWRICHC
+
+#  privateRoute:
+#    Type: AWS::EC2::Route
+#    DependsOn: IGWRICHC
+#    Properties:
+#      RouteTableId: !Ref TableRICHC
+#      DestinationCidrBlock: 0.0.0.0/0
+#      GatewayId: !Ref IGWRICHC
 
   SUBASSOCRICHC:
     Type: AWS::EC2::SubnetRouteTableAssociation

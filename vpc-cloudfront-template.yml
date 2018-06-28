@@ -171,7 +171,7 @@ Resources:
 
   privateRoute:
     Type: AWS::EC2::Route
-    DependsOn: IGWRICHC
+    DependsOn: NATGW
     Properties:
       RouteTableId: !Ref PrivateTable
       DestinationCidrBlock: 0.0.0.0/0

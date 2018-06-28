@@ -169,13 +169,13 @@ Resources:
       - Key: Name
         Value: 'Private Route Table for Private Subnet'
 
-  privateRoute:
-    Type: AWS::EC2::Route
-    DependsOn: NATGW
-    Properties:
-      RouteTableId: !Ref PrivateTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref NATGW
+#  privateRoute:
+#    Type: AWS::EC2::Route
+#    DependsOn: NATGW
+#    Properties:
+#      RouteTableId: !Ref PrivateTable
+#      DestinationCidrBlock: 0.0.0.0/0
+#      GatewayId: !Ref NATGW
 
   SUBASSOCRICHC:
     Type: AWS::EC2::SubnetRouteTableAssociation

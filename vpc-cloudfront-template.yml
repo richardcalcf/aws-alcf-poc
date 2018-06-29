@@ -49,7 +49,7 @@ Resources:
     Properties:
       CidrBlock: '10.0.1.0/24'
       VpcId: !Ref VPCRICHC
-      MapPublicIpOnLaunch: False
+      MapPublicIpOnLaunch: True
       Tags:
       -  Key: 'Name'
          Value: 'Public Subnet'
@@ -92,7 +92,7 @@ Resources:
       VpcId: !Ref VPCRICHC
       InternetGatewayId: !Ref IGWRICHC  
 
-  EC2RICHC1:
+  publicEC2:
     Type:  "AWS::EC2::Instance"
     Properties:
       ImageId:  !FindInMap ["RegionMaps", !Ref "AWS::Region", "MachineImage"]
@@ -116,10 +116,10 @@ Resources:
             echo "<html><h1>Hello Cloud Architects!</h1></html>" > /var/www/html/index.html
     DependsOn: SGRICHC
 
-  MyEIP:
-    Type: AWS::EC2::EIP
-    Properties:
-      InstanceId: !Ref EC2RICHC1
+#  MyEIP:
+#    Type: AWS::EC2::EIP
+#    Properties:
+#      InstanceId: !Ref publicEC2
 
   EC2RICHC2:
     Type:  "AWS::EC2::Instance"
@@ -210,3 +210,8 @@ Resources:
         ToPort: '80'
         CidrIp: 0.0.0.0/0
 # End of code
+
+
+# Up next... build an application load balance and autoscaling groups
+# Application Load Balancer
+# Autoscaling Group

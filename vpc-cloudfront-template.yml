@@ -145,7 +145,7 @@ Resources:
             echo "<html><h1>Hello Cloud Architects!</h1></html>" > /var/www/html/index.html
     DependsOn: SGRICHC
 
-  TableRICHC:
+  PublicTable:
     Type: AWS::EC2::RouteTable
     Properties:
       VpcId: !Ref VPCRICHC
@@ -153,11 +153,11 @@ Resources:
       - Key: Name
         Value: 'Public Route Table for Public Subnet'
 
-  myRoute:
+  publicRoute:
     Type: AWS::EC2::Route
     DependsOn: IGWRICHC
     Properties:
-      RouteTableId: !Ref TableRICHC
+      RouteTableId: !Ref PublicTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref IGWRICHC
 
@@ -180,7 +180,7 @@ Resources:
   SUBASSOCRICHC:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
-      RouteTableId: !Ref TableRICHC
+      RouteTableId: !Ref PublicTable
       SubnetId: !Ref SUBRICHC
     
   PRIVSUBASSOCRICHC:

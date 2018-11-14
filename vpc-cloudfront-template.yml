@@ -40,6 +40,19 @@ Mappings:
       MachineImage: "ami-061e7ebbc234015fe" # Amazon Linux March 2018  
 
 Resources:
+  S3BUCKETALCF:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      AccessControl: PublicRead
+      BucketName: alcfbucket
+      MetricsConfigurations: 
+        - Id: EntireBucket
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: error.html
+    DeletionPolicy: Retain
+
+
   VPCRICHC:
     Type: 'AWS::EC2::VPC'
     Properties:

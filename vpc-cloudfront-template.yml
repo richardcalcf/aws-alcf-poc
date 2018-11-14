@@ -1,3 +1,9 @@
+# Prerequesites for using this yaml template:
+# 1) Check for updates and replace the machine images for the regions.
+# 2) Create Key Pair "AdvancedCFN" or replace "AdvancedCFN" in yaml 
+# below.
+# 3) 
+
 Parameters:
   VPCName:
     Type: 'String'
@@ -25,13 +31,13 @@ Mappings:
       "DB": "db.t2.medium"
   RegionMaps:
     us-east-1: 
-      MachineImage: "ami-14c5486b" # Amazon Linux March 2018
+      MachineImage: "ami-013be31976ca2c322" # Amazon Linux March 2018
     us-east-2:
-      MachineImage: "ami-922914f7" # Amazon Linux March 2018
+      MachineImage: "ami-0350c5670171b5391" # Amazon Linux March 2018
     us-west-1:
-      MachineImage: "ami-25110f45" # Amazon Linux March 2018
+      MachineImage: "ami-01beb64058d271bc4" # Amazon Linux March 2018
     us-west-2:
-      MachineImage: "ami-e251209a" # Amazon Linux March 2018  
+      MachineImage: "ami-061e7ebbc234015fe" # Amazon Linux March 2018  
 
 Resources:
   VPCRICHC:

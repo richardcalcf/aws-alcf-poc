@@ -149,7 +149,7 @@ Resources:
       KeyName:  'AdvancedCFN'
       SubnetId: !Ref SUBRICHC2
       SecurityGroupIds:
-      - !Ref SGRICHC
+      - !Ref PRIVSG
       Tags:
       - Key: 'Name'
         Value: 'Private Web Server'
@@ -162,7 +162,7 @@ Resources:
             service httpd start
             chkconfig httpd on
             echo "<html><h1>Hello Cloud Architects!</h1></html>" > /var/www/html/index.html
-    DependsOn: SGRICHC
+    DependsOn: PRIVSG
 
   PublicTable:
     Type: AWS::EC2::RouteTable
@@ -228,6 +228,32 @@ Resources:
         FromPort: '80'
         ToPort: '80'
         CidrIp: 0.0.0.0/0
+  
+  PRIVSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: 'PrivSG'
+      GroupDescription: 'SSH and HTTP Access for both internal traffic'
+      VpcId: !Ref VPCRICHC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 10.0.0.0/16
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 10.0.0.0/16
+        - IpProtocol: tcp
+          FromPort: '443'
+          ToPort: '443'
+          CidrIp: 10.0.0.0/16  
+      SecurityGroupEgress:
+        IpProtocol: tcp
+        FromPort: '80'
+        ToPort: '80'
+        CidrIp: 0.0.0.0/0
+
 # End of code
 
 
